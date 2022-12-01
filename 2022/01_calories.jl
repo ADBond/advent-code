@@ -18,4 +18,8 @@ inputfilename = "2022/01calories.input.txt"
 caloriesperelf = getcaloriesperelf(inputfilename)
 maxcalories = maximum(caloriesperelf)
 
-print(maxcalories)
+println(maxcalories)
+
+# part 2
+sort!(caloriesperelf, rev=true)
+println(sum(caloriesperelf[1:3]))
