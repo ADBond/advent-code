@@ -13,6 +13,10 @@ function getcaloriesperelf(filename)
     cal_list
     
 end
+function gettopelves(elfcalories, numelves=3)
+    sort(caloriesperelf, rev=true)[1:numelves]
+end
+
 inputfilename = "2022/01calories.input.txt"
 
 caloriesperelf = getcaloriesperelf(inputfilename)
@@ -21,5 +25,7 @@ maxcalories = maximum(caloriesperelf)
 println(maxcalories)
 
 # part 2
-sort!(caloriesperelf, rev=true)
-println(sum(caloriesperelf[1:3]))
+topthree = gettopelves(caloriesperelf, 3)
+topthreetotal = sum(topthree)
+
+println(topthreetotal)
