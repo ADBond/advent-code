@@ -1,2 +1,4 @@
 # name input files thusly
 *.input.*
+# terrible system :(
+!*_test.input.*
