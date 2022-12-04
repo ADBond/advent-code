@@ -31,17 +31,32 @@ function tasksoverlap(taskranges)
     end
     false
 end
+function numcover(filename)
+    tasklists = getalltasklist(filename)
+    covers = tasksoverlap.(tasklists)
+    sum(covers)
+end
+# for part 2
+function tasksintersect(taskranges)
+    if length(intersect(taskranges[1], taskranges[2])) > 0
+        return true
+    end
+    false
+end
 function numoverlaps(filename)
     tasklists = getalltasklist(filename)
-    overlaps = tasksoverlap.(tasklists)
+    overlaps = tasksintersect.(tasklists)
     sum(overlaps)
 end
 
 println("Part 1:")
 # should be 2
-println(numoverlaps(inputfilenametest))
-println(numoverlaps(inputfilename))
+println(numcover(inputfilenametest))
+println(numcover(inputfilename))
 
 println("Part 2:")
+# should be 4
+println(numoverlaps(inputfilenametest))
+println(numoverlaps(inputfilename))
 
 end
