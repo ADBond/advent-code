@@ -1,7 +1,7 @@
 module constants
 export inputfilename, inputfilenametest
-inputfilename = "infull.txt"
-inputfilenametest = "intest.txt"
+inputfilename = "2022/07files.input.txt"
+inputfilenametest = "2022/07files_test.input.txt"
 end
 
 module v1
