@@ -14,13 +14,13 @@ using OrderedCollections
 dirreg = r"dir ([A-Za-z]*)"
 fulldirreg = r"dir ([A-Za-z/]*)"
 function fullpath(currentpath)
-  join(currentpath, "/")
+    join(currentpath, "/")
 end
 
 function replacedirwithfullpath(currentpath, dirline)
-  currentdir = getdir(dirline)
-  path = fullpath([currentpath..., currentdir])
-  "dir $path"
+    currentdir = getdir(dirline)
+    path = fullpath([currentpath..., currentdir])
+    "dir $path"
 end
 
 function getdir(entry)
@@ -36,13 +36,14 @@ function getdirs(filename)
     files = String[]
     directorycontains = Dict()
     currentpath = String[]
-  # hack for global
+    # hack for global. Sorry.
     dirpath = ""
     for line in alllines
         if occursin(cdreg, line)
             dirpath = fullpath(currentpath)
             if !(dirpath in [nothing, ""]) && length(files) > 0
                 if haskey(directorycontains, dirpath)
+                    # mainly a remnant of stage where i didn't use full path
                     println(directorycontains)
                     println(dirpath)
                     println(files)
@@ -68,6 +69,9 @@ function getdirs(filename)
             push!(files, line)
         end
     end
+    # should really be something like
+    # appendtodir!(directorycontains, currentpah, files)
+    # and same above. but w/e
     dirpath = fullpath(currentpath)
     directorycontains[dirpath] = files
     directorycontains
@@ -115,7 +119,8 @@ function deletedir!(directorycontains, dir)
     directorycontains
 end
 
-const totaldiskspace = 70000000const spaceneeded = 30000000
+const totaldiskspace = 70000000
+const spaceneeded = 30000000
 
 
 function clearspacesize(filename)
