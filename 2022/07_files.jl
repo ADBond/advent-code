@@ -5,7 +5,11 @@ inputfilenametest = "2022/07files_test.input.txt"
 end
 
 module v1
+using Pkg
+Pkg.activate(".")
 using ..constants
+# for sorting dicts
+using OrderedCollections
 
 dirreg = r"dir ([A-Za-z]*)"
 fulldirreg = r"dir ([A-Za-z/]*)"
@@ -35,7 +39,7 @@ function getdirs(filename)
   # hack for global
     dirpath = ""
     for line in alllines
-        println(line)
+        # println(line)
         if occursin(cdreg, line)
             dirpath = fullpath(currentpath)
             if !(dirpath in [nothing, ""]) && length(files) > 0
@@ -67,9 +71,13 @@ function getdirs(filename)
             else
                 line = replacedirwithfullpath(currentpath, line)
             end
+            # println("push $line to it")
             push!(files, line)
         end
     end
+    # println(currentpath)
+    dirpath = fullpath(currentpath)
+    # println("and then to $dirpath")
     directorycontains[dirpath] = files
     directorycontains
 end
@@ -109,6 +117,49 @@ function getdirectoriesupto(filename, upto)
     [v for (k, v) in filteredsizes]
 end
 
+function deletedir!(directorycontains, dir)
+    dirls = directorycontains[dir]
+    for subdir in dirls
+        if match(fulldirreg, subdir)
+            deletedir!(directorycontains, subdir)
+        end
+    end
+    # delete!(directorycontains, dir)
+    # don't actually delete - need ref! just takes no space
+    directorycontains[dir] = 0
+    directorycontains
+end
+
+const totaldiskspace = 70000000
+const spaceneeded = 30000000
+
+# function spaceavailable(directorysizes)
+#     totaldiskspace - directorysizes["//"]
+# end
+
+function clearspacesize(filename)
+    directorycontains = getdirs(filename)
+    sizes = getalldirectorysizes(directorycontains)
+    currentspaceused = sizes["/"]
+    sizes = Dict((k, sum(v)) for (k, v) in sizes)
+    sizes = sort(sizes, byvalue=true)
+    println(sizes)
+    # println([v for (k, v) in sizes])
+    println("have left, vs needed::")
+    println((totaldiskspace - currentspaceused, spaceneeded))
+    for (dir, size) in sizes
+        freedspace = sum(size)
+        wouldhavepspace = totaldiskspace - (currentspaceused - freedspace)
+        print("would have ")
+        println(wouldhavepspace)
+        if wouldhavepspace >= spaceneeded
+            # delete this folder!
+            return freedspace
+        end
+    end
+    nothing
+end
+
 println("Part 1:")
 # should be 95437
 println(getdirs(inputfilenametest))
@@ -116,5 +167,8 @@ println(sum(getdirectoriesupto(inputfilenametest, 100000)))
 println(sum(getdirectoriesupto(inputfilename, 100000)))
 
 println("Part 2:")
+# 24933642
+println(clearspacesize(inputfilenametest))
+println(clearspacesize(inputfilename))
 
 end
