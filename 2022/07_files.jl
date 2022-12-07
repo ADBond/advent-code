@@ -39,7 +39,6 @@ function getdirs(filename)
   # hack for global
     dirpath = ""
     for line in alllines
-        # println(line)
         if occursin(cdreg, line)
             dirpath = fullpath(currentpath)
             if !(dirpath in [nothing, ""]) && length(files) > 0
@@ -54,45 +53,32 @@ function getdirs(filename)
             indirectory = match(cdreg, line).captures[1]
             if indirectory == ".."
                 pop!(currentpath)
-                # println(currentpath)
             else
                 push!(currentpath, indirectory)
-                # println(currentpath)
             end
             files = String[]
-            # println("In $indirectory")
         elseif occursin(lsreg, line)
-            # println("Now list in $indirectory")
             files = String[]
         else
-            # println("\tpushing files to $indirectory")
             if occursin(sizereg, line)
                 line = match(sizereg, line).captures[1]
             else
                 line = replacedirwithfullpath(currentpath, line)
             end
-            # println("push $line to it")
             push!(files, line)
         end
     end
-    # println(currentpath)
     dirpath = fullpath(currentpath)
-    # println("and then to $dirpath")
     directorycontains[dirpath] = files
     directorycontains
 end
 
 function getdirectorysize(directorycontains, dir)
     sizes = Dict()
-    # println(dir)
-    # println(directorycontains)
     entries = directorycontains[dir]
     currentsize = 0
     for entry in entries
-        # println("checking")
-        # println(entry)
         if occursin(dirreg, entry)
-            # println("directory $entry")
             currentsize += getdirectorysize(directorycontains, getdir(entry))
         else
             currentsize += parse(Int64, entry)
@@ -111,7 +97,6 @@ end
 function getdirectoriesupto(filename, upto)
     directorycontains = getdirs(filename)
     sizes = getalldirectorysizes(directorycontains)
-    # println(sizes)
     filteredsizes = filter(((k, v),) -> v < upto, sizes)
     # just the sizes
     [v for (k, v) in filteredsizes]
@@ -130,12 +115,8 @@ function deletedir!(directorycontains, dir)
     directorycontains
 end
 
-const totaldiskspace = 70000000
-const spaceneeded = 30000000
+const totaldiskspace = 70000000const spaceneeded = 30000000
 
-# function spaceavailable(directorysizes)
-#     totaldiskspace - directorysizes["//"]
-# end
 
 function clearspacesize(filename)
     directorycontains = getdirs(filename)
@@ -143,15 +124,9 @@ function clearspacesize(filename)
     currentspaceused = sizes["/"]
     sizes = Dict((k, sum(v)) for (k, v) in sizes)
     sizes = sort(sizes, byvalue=true)
-    println(sizes)
-    # println([v for (k, v) in sizes])
-    println("have left, vs needed::")
-    println((totaldiskspace - currentspaceused, spaceneeded))
     for (dir, size) in sizes
         freedspace = sum(size)
         wouldhavepspace = totaldiskspace - (currentspaceused - freedspace)
-        print("would have ")
-        println(wouldhavepspace)
         if wouldhavepspace >= spaceneeded
             # delete this folder!
             return freedspace
