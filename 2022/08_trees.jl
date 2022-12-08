@@ -24,21 +24,14 @@ function clearindirection(trees, row, col, dir)
     (rows, cols) = size(trees)
     currenttree = trees[row, col]
     range = Dict(
-        # "left" => row > 1 ? ((row - 1):1) : [],
-        # "right" => row < rows ? ((row + 1):rows) : [],
-        # "up" => col > 1 ? ((col - 1):1) : [],
-        # "down" => col < cols ? ((col + 1):cols) : [],
         "left" => (row - 1):-1:1,
         "right" => (row + 1):1:rows,
         "up" => (col - 1):-1:1,
         "down" => (col + 1):1:cols,
     )
-    # println("checking tree $row, $col: $currenttree in dir $dir")
-    # println("range is $(range[dir])")
     if dir in ("left", "right")
         for r in range[dir]
             treeinway = trees[r, col]
-            # println("tree in way is $treeinway")
             if treeinway >= currenttree
                 return false
             end
@@ -46,14 +39,11 @@ function clearindirection(trees, row, col, dir)
     else
         for c in range[dir]
             treeinway = trees[row, c]
-            # println("tree in way is $treeinway")
             if treeinway >= currenttree
                 return false
             end
         end
     end
-    # println("tree at $row, $col is clear in $dir")
-    # println("clear ")
     true
 end
 # sorry :(
@@ -91,8 +81,6 @@ function isvisible(trees, row, col)
     (rows, cols) = size(trees)
     isedge = (row == 1 || row == rows || col == 1 || col == cols)
     if isedge
-        # println("edge!")
-        # println(row, col)
         return true
     end
     # let's just try all directions in unclever order
