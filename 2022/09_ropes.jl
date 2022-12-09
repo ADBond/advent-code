@@ -2,6 +2,7 @@ module constants
 export inputfilename, inputfilenametest
 inputfilename = "2022/09ropes.input.txt"
 inputfilenametest = "2022/09ropes_test.input.txt"
+inputfilenametest2 = "2022/09ropes2_test.input.txt"
 end
 
 module v1
@@ -43,14 +44,10 @@ function executeinstruction!(coords, instruction)
     instructionreg = r"([LRUD]) ([0-9]*)"
     (instructiondir, instructionsteps) = match(instructionreg, instruction).captures
     tails = Set()
-    # println(coords)
-    # println("execute $instruction")
     for i in 1:parse(Int8, instructionsteps)
         newcoords!(coords, instructiondir)
         push!(tails, coords["tail"])
     end
-    # println(coords)
-    # println(tails)
     tails
 end
 
@@ -64,7 +61,6 @@ function executeinstructiontracking(filename)
     for instruction in instructions
         tails = union(tails, executeinstruction!(coords, instruction))
     end
-    # println(tails)
     length(tails)
 end
 
