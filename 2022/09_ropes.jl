@@ -31,13 +31,13 @@ function newhead(headcoords, instructiondir)
 end
 
 function newcoords!(coords, instructiondir)
-    oldhead = coords["head"]
-    coords["head"] = newhead(coords["head"], instructiondir)
-    if isadjacent(coords["head"], coords["tail"])
+    oldhead = coords[1]
+    coords[1] = newhead(coords[1], instructiondir)
+    if isadjacent(coords[1], coords[2])
         return coords
     end
-    coords["tail"] = oldhead
-    coords["tail"]
+    coords[2] = oldhead
+    coords[2]
 end
 
 function executeinstruction!(coords, instruction)
@@ -46,7 +46,7 @@ function executeinstruction!(coords, instruction)
     tails = Set()
     for i in 1:parse(Int8, instructionsteps)
         newcoords!(coords, instructiondir)
-        push!(tails, coords["tail"])
+        push!(tails, coords[2])
     end
     tails
 end
@@ -54,8 +54,7 @@ end
 function executeinstructiontracking(filename)
     instructions = readlines(filename)
     coords = Dict(
-        "head" => (0, 0),
-        "tail" => (0, 0),
+        i => (0, 0) for i in (1, 2)
     )
     tails = Set([(0, 0)])
     for instruction in instructions
