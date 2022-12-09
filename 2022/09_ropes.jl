@@ -30,35 +30,38 @@ function newhead(headcoords, instructiondir)
     headcoords + instructionlookup[instructiondir]
 end
 
-function newcoords!(coords, instructiondir)
-    oldhead = coords[1]
-    coords[1] = newhead(coords[1], instructiondir)
-    if isadjacent(coords[1], coords[2])
-        return coords
+function newcoords!(coords, instructiondir, numknots=2)
+    for i in (numknots-1):(numknots-1)
+        oldhead = coords[i]
+        coords[i] = newhead(coords[i], instructiondir)
+        # if i am adjacent to next knot then there is no more effect
+        if isadjacent(coords[i], coords[i+1])
+            return coords[numknots]
+        end
+        coords[i+1] = oldhead
     end
-    coords[2] = oldhead
-    coords[2]
+    coords[numknots]
 end
 
-function executeinstruction!(coords, instruction)
+function executeinstruction!(coords, instruction, numknots=2)
     instructionreg = r"([LRUD]) ([0-9]*)"
     (instructiondir, instructionsteps) = match(instructionreg, instruction).captures
     tails = Set()
     for i in 1:parse(Int8, instructionsteps)
-        newcoords!(coords, instructiondir)
-        push!(tails, coords[2])
+        newcoords!(coords, instructiondir, numknots)
+        push!(tails, coords[numknots])
     end
     tails
 end
 
-function executeinstructiontracking(filename)
+function executeinstructiontracking(filename, numknots=2)
     instructions = readlines(filename)
     coords = Dict(
-        i => (0, 0) for i in (1, 2)
+        i => (0, 0) for i in (1, numknots)
     )
     tails = Set([(0, 0)])
     for instruction in instructions
-        tails = union(tails, executeinstruction!(coords, instruction))
+        tails = union(tails, executeinstruction!(coords, instruction, numknots))
     end
     length(tails)
 end
