@@ -29,18 +29,23 @@ end
 function newhead(headcoords, instructiondir)
     headcoords + instructionlookup[instructiondir]
 end
+# round away from zero
+function roundout(x)
+    x > 0 ? ceil(x) : floor(x)
+end
 
 # TODO: need to correct logic in this
 function newcoords!(coords, instructiondir, numknots=2)
+    coords[1] = newhead(coords[1], instructiondir)
     for i in 1:(numknots-1)
-        oldhead = coords[i]
-        coords[i] = newhead(coords[i], instructiondir)
-        # println(coords)
         # if i am adjacent to next knot then there is no more effect
         if isadjacent(coords[i], coords[i+1])
             return coords[numknots]
         end
-        coords[i+1] = oldhead
+        coords[i+1] += (
+            roundout((coords[i][1] - coords[i+1][1])//2),
+            roundout((coords[i][2] - coords[i+1][2])//2)
+        )
     end
     coords[numknots]
 end
