@@ -1,5 +1,5 @@
 module constants
-export inputfilename, inputfilenametest
+export inputfilename, inputfilenametest, inputfilenametest2
 inputfilename = "2022/09ropes.input.txt"
 inputfilenametest = "2022/09ropes_test.input.txt"
 inputfilenametest2 = "2022/09ropes2_test.input.txt"
@@ -29,37 +29,46 @@ end
 function newhead(headcoords, instructiondir)
     headcoords + instructionlookup[instructiondir]
 end
-
-function newcoords!(coords, instructiondir)
-    oldhead = coords["head"]
-    coords["head"] = newhead(coords["head"], instructiondir)
-    if isadjacent(coords["head"], coords["tail"])
-        return coords
-    end
-    coords["tail"] = oldhead
-    coords["tail"]
+# round away from zero
+function roundout(x)
+    x > 0 ? ceil(x) : floor(x)
 end
 
-function executeinstruction!(coords, instruction)
+# TODO: need to correct logic in this
+function newcoords!(coords, instructiondir, numknots=2)
+    coords[1] = newhead(coords[1], instructiondir)
+    for i in 1:(numknots-1)
+        # if i am adjacent to next knot then there is no more effect
+        if isadjacent(coords[i], coords[i+1])
+            return coords[numknots]
+        end
+        coords[i+1] += (
+            roundout((coords[i][1] - coords[i+1][1])//2),
+            roundout((coords[i][2] - coords[i+1][2])//2)
+        )
+    end
+    coords[numknots]
+end
+
+function executeinstruction!(coords, instruction, numknots=2)
     instructionreg = r"([LRUD]) ([0-9]*)"
     (instructiondir, instructionsteps) = match(instructionreg, instruction).captures
     tails = Set()
     for i in 1:parse(Int8, instructionsteps)
-        newcoords!(coords, instructiondir)
-        push!(tails, coords["tail"])
+        newcoords!(coords, instructiondir, numknots)
+        push!(tails, coords[numknots])
     end
     tails
 end
 
-function executeinstructiontracking(filename)
+function executeinstructiontracking(filename, numknots=2)
     instructions = readlines(filename)
     coords = Dict(
-        "head" => (0, 0),
-        "tail" => (0, 0),
+        i => (0, 0) for i in 1:numknots
     )
     tails = Set([(0, 0)])
     for instruction in instructions
-        tails = union(tails, executeinstruction!(coords, instruction))
+        tails = union(tails, executeinstruction!(coords, instruction, numknots))
     end
     length(tails)
 end
@@ -71,5 +80,8 @@ println(executeinstructiontracking(inputfilenametest))
 println(executeinstructiontracking(inputfilename))
 
 println("Part 2:")
+# 36
+println(executeinstructiontracking(inputfilenametest2, 10))
+println(executeinstructiontracking(inputfilename, 10))
 
 end
