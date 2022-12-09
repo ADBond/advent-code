@@ -1,5 +1,5 @@
 module constants
-export inputfilename, inputfilenametest
+export inputfilename, inputfilenametest, inputfilenametest2
 inputfilename = "2022/09ropes.input.txt"
 inputfilenametest = "2022/09ropes_test.input.txt"
 inputfilenametest2 = "2022/09ropes2_test.input.txt"
@@ -30,10 +30,12 @@ function newhead(headcoords, instructiondir)
     headcoords + instructionlookup[instructiondir]
 end
 
+# TODO: need to correct logic in this
 function newcoords!(coords, instructiondir, numknots=2)
-    for i in (numknots-1):(numknots-1)
+    for i in 1:(numknots-1)
         oldhead = coords[i]
         coords[i] = newhead(coords[i], instructiondir)
+        # println(coords)
         # if i am adjacent to next knot then there is no more effect
         if isadjacent(coords[i], coords[i+1])
             return coords[numknots]
@@ -57,7 +59,7 @@ end
 function executeinstructiontracking(filename, numknots=2)
     instructions = readlines(filename)
     coords = Dict(
-        i => (0, 0) for i in (1, numknots)
+        i => (0, 0) for i in 1:numknots
     )
     tails = Set([(0, 0)])
     for instruction in instructions
@@ -73,5 +75,8 @@ println(executeinstructiontracking(inputfilenametest))
 println(executeinstructiontracking(inputfilename))
 
 println("Part 2:")
+# 36
+println(executeinstructiontracking(inputfilenametest2, 10))
+println(executeinstructiontracking(inputfilename, 10))
 
 end
