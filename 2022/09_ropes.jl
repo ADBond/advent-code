@@ -34,7 +34,6 @@ function roundout(x)
     x > 0 ? ceil(x) : floor(x)
 end
 
-# TODO: need to correct logic in this
 function newcoords!(coords, instructiondir, numknots=2)
     coords[1] = newhead(coords[1], instructiondir)
     for i in 1:(numknots-1)
@@ -70,18 +69,45 @@ function executeinstructiontracking(filename, numknots=2)
     for instruction in instructions
         tails = union(tails, executeinstruction!(coords, instruction, numknots))
     end
-    length(tails)
+    tails
+end
+function executeinstructiontrackinglength(filename, numknots=2)
+    length(executeinstructiontracking(filename, numknots))
+end
+
+function printvisited(coordsset)
+    max_x = maximum([i[1] for i in coordsset])
+    max_y = maximum([i[2] for i in coordsset])
+    min_x = minimum([i[1] for i in coordsset])
+    min_y = minimum([i[2] for i in coordsset])
+    println("")
+    for y in min_y:max_y
+        for x in min_x:max_x
+            if (x, y) == (0, 0)
+                print("s")
+            elseif (x, y) in coordsset
+                print("#")
+            else
+                print(".")
+            end
+        end
+        println("")
+    end
+    println("")
 end
 
 
 println("Part 1:")
 # should be 13
-println(executeinstructiontracking(inputfilenametest))
-println(executeinstructiontracking(inputfilename))
+println(executeinstructiontrackinglength(inputfilenametest))
+println(executeinstructiontrackinglength(inputfilename))
+printvisited(executeinstructiontracking(inputfilenametest))
+
 
 println("Part 2:")
 # 36
-println(executeinstructiontracking(inputfilenametest2, 10))
-println(executeinstructiontracking(inputfilename, 10))
+println(executeinstructiontrackinglength(inputfilenametest2, 10))
+println(executeinstructiontrackinglength(inputfilename, 10))
+printvisited(executeinstructiontracking(inputfilenametest2, 10))
 
 end
