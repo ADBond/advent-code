@@ -38,6 +38,31 @@ function sumsignalstrengths(filename)
     sum([k*i for (k, i) in zip(kv, keyindices)])
 end
 
+function islit(spritecentre, xindex)
+    (spritecentre + 1 >= xindex) && (spritecentre - 1 <= xindex)
+end
+
+function printsignaloutput(filename)
+    xvalues = executeinstructions(filename)
+    rows = 6
+    cols = 40
+    cycle = 0
+    for row in 1:rows
+        for col in 1:cols
+            cycle += 1
+            spritecentre = xvalues[cycle]
+            xindex = col - 1
+            if islit(spritecentre, xindex)
+                print("#")
+            else
+                print(".")
+            end
+        end
+        println("")
+    end
+    println("")
+end
+
 println("Part 1:")
 # should be 13140
 println(sumsignalstrengths(inputfilenametest))
@@ -45,5 +70,13 @@ println(sumsignalstrengths(inputfilename))
 
 
 println("Part 2:")
+##..##..##..##..##..##..##..##..##..##..
+###...###...###...###...###...###...###.
+####....####....####....####....####....
+#####.....#####.....#####.....#####.....
+######......######......######......####
+#######.......#######.......#######.....
+printsignaloutput(inputfilenametest)
+printsignaloutput(inputfilename)
 
 end
