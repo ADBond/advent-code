@@ -68,6 +68,7 @@ function getinitialmonkeys(filename)
         # i _really_ need to get a better pattern than continuously doing this
         # obviously should be able to use match() directly
         if occursin(re_monkeyindex, line)
+            println("fresh monkeyman")
             # not sure if this is idiomatic. Check that at some stage.
             if monkeyindex != nothing && !monkey_index in initialmonkeys
                 error("Don't think this should happen")
@@ -76,6 +77,7 @@ function getinitialmonkeys(filename)
             # will make it easier to trace if bad values sneak through
             testmonkeyindices = Dict(true => -2, false => -2)
             monkey_index = match(re_monkeyindex, line).captures[1]
+            println(monkey_index)
         elseif occursin(re_startingitems, line)
             println("obviously here we complain")
             items = match(re_startingitems, line).captures
