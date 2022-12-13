@@ -8,11 +8,11 @@ module v1
 using ..constants
 
 # let's not be too clever
-re_monkeyindex = r"Monkey ([0-9]*):"
-re_startingitems = r"\s*Starting items: (([0-9]*|,| )*)"
-re_operation = r"\s*Operation: new = old (\+|\-|\*|\/) ([0-9]*|old)"
-re_divtest = r"\s*Test: divisible by ([0-9]*)"
-re_monkeythrow = r"\s*If (true|false): throw to monkey ([0-9]*)"
+re_monkeyindex = r"Monkey (\d*):"
+re_startingitems = r"\s*Starting items: (\d+)(?:,\s*(\d+))*"
+re_operation = r"\s*Operation: new = old (\+|\-|\*|\/) (\d*|old)"
+re_divtest = r"\s*Test: divisible by (\d*)"
+re_monkeythrow = r"\s*If (true|false): throw to monkey (\d*)"
 
 
 mutable struct Item
@@ -77,8 +77,12 @@ function getinitialmonkeys(filename)
             testmonkeyindices = Dict(true => -2, false => -2)
             monkey_index = match(re_monkeyindex, line).captures[1]
         elseif occursin(re_startingitems, line)
-            # items = match(re_startingitems, line).captures[1]
-            # println(items)
+            println("obviously here we complain")
+            items = match(re_startingitems, line).captures
+            items = filter(x -> x != nothing, items)
+            println(items)
+            items = map(x -> Item(parse(Int8, x)), items)
+            println(items)
         elseif occursin(re_operation, line)
             nothing
         elseif occursin(re_divtest, line)
