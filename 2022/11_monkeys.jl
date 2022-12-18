@@ -9,7 +9,7 @@ using ..constants
 
 # let's not be too clever
 re_monkeyindex = r"Monkey (\d*):"
-re_startingitems = r"\s*Starting items: (\d+)(?:,\s*(\d+))*"
+re_startingitems = r"\s*Starting items: (\d+(?:,\s*\d+)*)"
 re_operation = r"\s*Operation: new = old (\+|\-|\*|\/) (\d*|old)"
 re_divtest = r"\s*Test: divisible by (\d*)"
 re_monkeythrow = r"\s*If (true|false): throw to monkey (\d*)"
@@ -52,6 +52,26 @@ function monkeyround!(monkeys::Dict{Monkey})
     end
 end
 
+function insertmonkey!(
+    initialmonkeys,
+    monkeyindex,
+    items,
+    operationfunc,
+    testdivisibleby,
+    testmonkeyindices
+)
+    if monkeyindex == nothing || haskey(initialmonkeys, monkeyindex)
+        error("Don't think this should happen")
+    end
+    initialmonkeys[monkeyindex] = Monkey(
+        items,
+        operationfunc,
+        testdivisibleby,
+        testmonkeyindices,
+        1
+    )
+end
+
 function getinitialmonkeys(filename)
     inputlines = readlines(filename)
     monkeyindex = nothing
@@ -80,7 +100,8 @@ function getinitialmonkeys(filename)
             println(monkeyindex)
         elseif occursin(re_startingitems, line)
             println("obviously here we complain")
-            items = match(re_startingitems, line).captures
+            itemsstring = match(re_startingitems, line).captures[1]
+            items = split(itemsstring, ",")
             items = filter(x -> x != nothing, items)
             println(items)
             items = map(x -> Item(parse(Int8, x)), items)
@@ -97,19 +118,26 @@ function getinitialmonkeys(filename)
             testmonkeyindices[condition] = to_monkey
         elseif line == ""
             # put it all together
-            println("putting a monkey in!")
-            println(monkeyindex)
-            initialmonkeys[monkeyindex] = Monkey(
+            insertmonkey!(
+                initialmonkeys,
+                monkeyindex,
                 items,
                 operationfunc,
                 testdivisibleby,
-                testmonkeyindices,
-                1
+                testmonkeyindices
             )
         else
             error("Well that did not work: '$line'")
         end
     end
+    insertmonkey!(
+        initialmonkeys,
+        monkeyindex,
+        items,
+        operationfunc,
+        testdivisibleby,
+        testmonkeyindices
+    )
     initialmonkeys
 end
 
