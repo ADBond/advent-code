@@ -70,14 +70,14 @@ function getinitialmonkeys(filename)
         if occursin(re_monkeyindex, line)
             println("fresh monkeyman")
             # not sure if this is idiomatic. Check that at some stage.
-            if monkeyindex != nothing && !monkey_index in initialmonkeys
+            if monkeyindex != nothing && !haskey(initialmonkeys, monkeyindex)
                 error("Don't think this should happen")
             end
             # okay this is very hacky, but let's initialise here with different value to above
             # will make it easier to trace if bad values sneak through
             testmonkeyindices = Dict(true => -2, false => -2)
-            monkey_index = match(re_monkeyindex, line).captures[1]
-            println(monkey_index)
+            monkeyindex = match(re_monkeyindex, line).captures[1]
+            println(monkeyindex)
         elseif occursin(re_startingitems, line)
             println("obviously here we complain")
             items = match(re_startingitems, line).captures
@@ -97,6 +97,8 @@ function getinitialmonkeys(filename)
             testmonkeyindices[condition] = to_monkey
         elseif line == ""
             # put it all together
+            println("putting a monkey in!")
+            println(monkeyindex)
             initialmonkeys[monkeyindex] = Monkey(
                 items,
                 operationfunc,
