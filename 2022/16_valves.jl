@@ -27,10 +27,41 @@ function getvalvedetails(filename)
     (flowrates, paths)
 end
 
+# won't bother with any serious validation
+struct Cave
+    minutespast::Int8
+    openvalves::Array{String}
+    pressurereleased::Int64
+    currentposition::String
+end
+
+function openvalve(cave::Cave, valve)
+    if valve in cave.openvalves
+        error("Valve $valve already open")
+    end
+    Cave(
+        cave.minutespast + 1,
+        [cave.openvalves..., valve],
+        incrementpressure(cave),
+        cave.currentposition
+    )
+end
+
+function moveto(cave::Cave, valve, paths)
+    # check if move is allowed
+    # execute move, tick
+end
+
+function calculatepressures(filename)
+    flowrates, paths = getvalvedetails(filename)
+    initialcave = Cave(0, [], 0, "AA")
+end
+
 # 30 mins
 
 println("Part 1:")
 # max pressure 1651
 println(getvalvedetails(inputfilenametest))
+println(calculatepressures(inputfilenametest))
 
 end
