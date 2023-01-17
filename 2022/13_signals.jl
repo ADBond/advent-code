@@ -66,12 +66,9 @@ function correctlyorderedpairs(filename)
     packets = Packet[]
     correctindices = Integer[]
     for line in lines
-        # sorry!
-        # println(line)
-        # println("parse")
         if line != ""
+            # sorry!
             current = Packet(eval(Meta.parse(line)))
-            # println(current)
             push!(packets, current)
         else
             if length(packets) != 2
@@ -87,6 +84,52 @@ function correctlyorderedpairs(filename)
     correctindices
 end
 
+function quicksort(list)
+    if length(list) < 2
+        return list
+    end
+    pivot = list[1]
+    # could be cleverer with array types here, but probably overkill for this
+    fore = []
+    aft = []
+    for item in list[2:end]
+        order = iscorrectlyordered(item, pivot)
+        if order == correct
+            push!(fore, item)
+        else
+            # let ties go to the aft list
+            push!(aft, item)
+        end
+    end
+    [quicksort(fore)..., pivot, quicksort(aft)...]
+end
+
+function getallpackets(filename)
+    lines = readlines(filename)
+    packets = Packet[]
+    for line in lines
+        if line != ""
+            # sorry!
+            current = Packet(eval(Meta.parse(line)))
+            push!(packets, current)
+        end
+    end
+    packets
+end
+
+function getdividerindices(filename)
+    dividers = [Packet([[2]]), Packet([[6]])]
+    input = [getallpackets(filename)..., dividers...]
+    sorted = quicksort(input)
+    dividerindices = Integer[]
+    for i in 1:length(sorted)
+        if sorted[i] in dividers
+            push!(dividerindices, i)
+        end
+    end
+    dividerindices
+end
+
 println("Part 1:")
 
 # incorrect x2
@@ -97,5 +140,9 @@ println(iscorrectlyordered([[[]]], [[]]))
 println(sum(correctlyorderedpairs(inputfilenametest)))
 println(sum(correctlyorderedpairs(inputfilename)))
 
+println("Part 2:")
+# should be 140
+println(prod(getdividerindices(inputfilenametest)))
+println(prod(getdividerindices(inputfilename)))
 
 end
