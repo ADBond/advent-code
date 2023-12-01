@@ -25,7 +25,17 @@ int get_digit_from(const std::string& line, const bool& forwards=true) {
 		number_strings.push_back(key);
 	}
 
-	for (int idx = 0; idx < line_length && !foundone; ++idx) {
+	// config setup
+	int start_idx;
+	int inc;
+	if (forwards) {
+		start_idx = 0;
+		inc = 1;
+	} else {
+		start_idx = line_length - 1;
+		inc = -1;
+	}
+	for (int idx = start_idx; 0 <= idx && idx < line_length && !foundone; idx += inc) {
 		char line_char = line[idx];
 		if (isdigit(line_char)) {
 			digit_value = line_char - '0';
@@ -33,7 +43,7 @@ int get_digit_from(const std::string& line, const bool& forwards=true) {
 		} else {
 			for (const auto& [number_string, value] : numbers_as_words) {
 				const int str_length = number_string.length();
-				const int idx_end = idx +  - 1;
+				const int idx_end = idx + str_length - 1;
 				if (idx_end < line_length) {
 					const std::string candidate_string = line.substr(idx, str_length);
 					if (candidate_string == number_string) {
@@ -45,7 +55,8 @@ int get_digit_from(const std::string& line, const bool& forwards=true) {
 			}
 		}
 		if (foundone) {
-			std::cout << "Found front value " << digit_value << std::endl;
+			const std::string dir = forwards ? "front" : "back";
+			std::cout << "Found " << dir << " value " << digit_value << std::endl;
 		}
 	}
 	return digit_value;
@@ -53,8 +64,8 @@ int get_digit_from(const std::string& line, const bool& forwards=true) {
 
 int main() {
 
-	std::ifstream input_file("2023/input/01_2_test.input.txt");
-	// std::ifstream input_file("2023/input/01_2.input.txt");
+	// std::ifstream input_file("2023/input/01_2_test.input.txt");
+	std::ifstream input_file("2023/input/01.input.txt");
 	if (!input_file.is_open()) {
 		return 1;
 	}
@@ -64,7 +75,11 @@ int main() {
 		int line_total = 0;
 		// attack from the front
 		line_total += 10*get_digit_from(line);
+		// and backsies
+		line_total += get_digit_from(line, false);
+		std::cout << "Total " << line_total << "\tfor line: " << line << std::endl;
+		total += line_total;
 	}
-
+	std::cout << "Absolute total is " << total << std::endl;
 	return 0;
 }

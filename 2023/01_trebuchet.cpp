@@ -31,7 +31,7 @@ int main() {
         // sorry DRY :(
         // and the rear
         foundone = false;
-        for (int idx = line.length(); idx >= 0 && !foundone; --idx) {
+        for (int idx = line.length() - 1; idx >= 0 && !foundone; --idx) {
             char line_char = line[idx];
 
             if (isdigit(line_char)) {

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+set -euo pipefail
 
 # this should do, at least for the early days
 YEAR=2023
