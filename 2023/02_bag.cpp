@@ -22,6 +22,7 @@ int main() {
 
 	std::vector<int> possible_ids;
 	std::map<std::string, int> ref_numbers{{"red", 12}, {"green", 13}, {"blue", 14}};
+	std::vector<int> powers;
 
 	while (std::getline(input_file, line)) {
 		bool valid_game = true;
@@ -55,6 +56,7 @@ int main() {
 					valid_game = false;
 				}
 			}
+				powers.push_back(max_balls["red"]*max_balls["green"]*max_balls["blue"]);
     }
 		if (valid_game) {
 			possible_ids.push_back(game_number);
@@ -62,12 +64,19 @@ int main() {
 	}
 
 	std::cout << "Possible game ids: " << std::endl;
-	int total = 0;
-	for (auto& id: possible_ids){
+	int total_ids = 0;
+	int total_power = 0;
+	for (const auto& id: possible_ids){
 		std::cout << id << std::endl;
-		total += id;
+		total_ids += id;
 	}
-	std::cout << "Sum is: " << total << std::endl;
+	std::cout << "Powers: " << std::endl;
+	for (const auto& power: powers) {
+		std::cout << power << std::endl;
+		total_power += power;
+	}
+	std::cout << "Sum of ids is: " << total_ids << std::endl;
+	std::cout << "Sum of powers is: " << total_power << std::endl;
 
   return 0;
 }
